@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'chanduyadav143/jmetertest:v1.0'
-        TEST_REPO = 'https://github.com/chanduyadav143/JMeter-Scripts.git'
+        TEST_REPO = 'https://github.com/sandeeppolavarapu73/Loadtest50.git'
     }
 
     stages {
@@ -20,14 +20,14 @@ pipeline {
             steps {
                 bat """
                 docker run --rm -v %cd%\\JMX_Files:/tests -w /tests ${IMAGE_NAME} ^
-                -n -t Sample.jmx -l results.jtl
+                -n -t ab_accountsummary.jmx -l results.jtl
                 """
             }
         }
 
         stage('Archive Results') {
             steps {
-                archiveArtifacts artifacts: 'JMX_Files/results.jtl, report/**', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'results.jtl, report/**', allowEmptyArchive: true
             }
         }
 
@@ -41,18 +41,18 @@ pipeline {
                     )
                 ]) {
                     bat """
-                    git config --global user.email "Chandu143.cy@gmail.com"
-                    git config --global user.name "chanduyadav143"
+                    git config --global user.email "sandeeppolavarapu73@gmail.com"
+                    git config --global user.name "sandeeppolavarapu73"
 
                     rem Pull latest changes first
-                    git pull https://%GIT_USER%:%GIT_PASS%@github.com/chanduyadav143/JMeter-Scripts.git main
+                    git pull https://%GIT_USER%:%GIT_PASS%@github.com/sandeeppolavarapu73/Loadtest50.git main
 
                     rem Create results folder if not exists
                     if not exist results mkdir results
 
                     rem Append build number to results file and folder
                     set BUILD_NUM=%BUILD_NUMBER%
-                    copy /Y JMX_Files\\results.jtl results\\results_%BUILD_NUM%.jtl
+                    copy /Y results.jtl results\\results_%BUILD_NUM%.jtl
                     xcopy /E /I /Y report results\\report_%BUILD_NUM%
 
                     git add results\\
